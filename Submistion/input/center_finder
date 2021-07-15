@@ -1,0 +1,12 @@
+#!/bin/bash
+
+natom=20900
+
+natom=$(( natom + 2 ))
+tail -$natom outtrj.xyz > x.xyz
+
+gfortran center_finder.f90 -o c
+./c
+
+
+rm -f t tt ttt* temp* c

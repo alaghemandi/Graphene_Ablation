@@ -1,0 +1,76 @@
+#!/bin/bash -l
+
+# Set SCC project
+#$ -P fpmats
+
+#$ -l h_rt=96:00:00   # Specify the hard time limit for the job
+#$ -N react_mix           # Give job a name
+
+## Request a node with at least 8 GB of memory per core 
+##$ -l mem_per_core=8G
+
+## Request four cores
+##$ -pe omp 16
+#$ -pe mpi_16_tasks_per_node 16
+
+##OMP_NUM_THREADS=$NSLOTS
+
+module load openmpi/1.10.1_intel2016  
+module load ffmpeg/3.3
+module load lammps/31Mar17 
+
+hostname > log
+
+cp input/data.rdx .
+cp input/ffield.reax_2013 .
+cp input/control.reax_c.rdx .
+cp input/in_pulse_maker .
+cp input/rebuild_data .
+cp input/in.reaxc.rdx_relax .
+
+
+./in_pulse_maker
+mpirun -np $NSLOTS lammps < in.reaxc.rdx_pulse >> log
+./rebuild_data
+mv rebuild_data_lammps data.rdx
+mv RDX_ho.trj RDX_ho.trj_1
+mv trj trj_1
+mv trjvel trjvel_1
+mv log.lammps log.lammps_1
+rm -f react_*
+
+mpirun -np $NSLOTS lammps < in.reaxc.rdx_relax >> log
+./rebuild_data
+mv rebuild_data_lammps data.rdx
+mv RDX_ho.trj RDX_ho.trj_2
+mv trj trj_2
+mv trjvel trjvel_2
+mv log.lammps log.lammps_2
+rm -f react_*
+
+./in_pulse_maker
+mpirun -np $NSLOTS lammps < in.reaxc.rdx_pulse >> log
+./rebuild_data
+mv rebuild_data_lammps data.rdx
+mv RDX_ho.trj RDX_ho.trj_3
+mv trj trj_3
+mv trjvel trjvel_3
+mv log.lammps log.lammps_3
+rm -f react_*
+
+mpirun -np $NSLOTS lammps < in.reaxc.rdx_relax >> log
+./rebuild_data
+mv rebuild_data_lammps data.rdx
+mv RDX_ho.trj RDX_ho.trj_4
+mv trj trj_4
+mv trjvel trjvel_4
+mv log.lammps log.lammps_4
+rm -f react_*
+
+
+rm -r -f output
+mkdir output
+mv trj* log.lammps* RDX_ho.trj_* output
+
+
+#lammps -sf omp -pk omp 8 < in.reaxc.rdx >> log

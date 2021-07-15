@@ -1,0 +1,27 @@
+# ReaxFF potential for RDX system                                                 
+# this run is equivalent to reax/in.reax.rdx                                      
+units		real                                                                  
+atom_style	charge                                                                
+read_data	data.rdx                                                              
+pair_style      reax/c control.reax_c.rdx                                         
+pair_coeff      * * ffield.reax_2013  C                                           
+group hot id        1       2       3     369     373     374     375     376     377     378     379     380     753     757   20523   20895   20896   20899   20900   20901   20902   20903  
+group		rest subtract all hot                                                 
+compute reax all pair reax/c                                                      
+neighbor	2.5 bin                                                               
+neigh_modify	every 10 delay 0 check no                                         
+velocity        hot create 10000.0 4928459 dist uniform #gaussian                 
+fix             1 rest nve                                                        
+fix             2 hot nvt temp 10000.0 10000.0 1.0                                
+fix             3 all qeq/reax 1 0.0 10.0 1.0e-12 reax/c                          
+compute 	myTemp1 rest temp                                                     
+compute 	myTemp2 hot temp                                                      
+thermo		10                                                                    
+thermo_style 	custom step temp epair etotal press vol c_myTemp1 c_myTemp2       
+timestep	0.1                                                                   
+fix             momen rest momentum 1 linear 1 1 1                                
+dump 		3 all custom 10 trj id q mass x y z                                   
+dump        4 all custom 10 trjvel id mass vx vy vz                               
+restart 	1000 x.restart                                                        
+run		1000                                                                      
+  

@@ -1,0 +1,92 @@
+# ReaxFF potential for RDX system
+# this run is equivalent to reax/in.reax.rdx
+
+units		real
+
+atom_style	charge
+read_data	data.rdx
+#read_restart	restartin
+
+pair_style      reax/c control.reax_c.rdx
+pair_coeff      * * ffield.reax_2013  C 
+
+#group 		hyd type 1 
+#group		oxy type 2
+group		hot1 id 1 2 3 4 5 6 7 8 9 10 11 12 361 364 365 366 367 368 369 370 371 372 373 374 375 376 377 378 379 380 381
+group		hot2 id 382 383 384 385 386 387 388 390 745 746 748 749 750 751 752 753 754 755 756 757 758 759 760 761 762
+group		hot3 id 1129 1133 1134 1137 1138 20142 20143 20144 20147 20148  20511 20512 20515 20516 20518 20519 20520 20521
+group		hot4 id 20522 20523 20524 20525 20526 20527 20528 20530 20531 20532 20885 20886 20887 20888 20889 20890
+group		hot5 id 20891 20892 20893 20894 20895 20896 20897 20898 20899 20900
+group		hot union hot1 hot2 hot3 hot4 hot5
+
+group		rest subtract all hot
+
+compute reax all pair reax/c
+
+variable eb  	 equal c_reax[1]
+variable ea  	 equal c_reax[2]
+variable elp 	 equal c_reax[3]
+variable emol 	 equal c_reax[4]
+variable ev 	 equal c_reax[5]
+variable epen 	 equal c_reax[6]
+variable ecoa 	 equal c_reax[7]
+variable ehb 	 equal c_reax[8]
+variable et 	 equal c_reax[9]
+variable eco 	 equal c_reax[10]
+variable ew 	 equal c_reax[11]
+variable ep 	 equal c_reax[12]
+variable efi 	 equal c_reax[13]
+variable eqeq 	 equal c_reax[14]
+
+neighbor	2.5 bin
+neigh_modify	every 10 delay 0 check no
+
+#group		A type 1
+#group 		B type 2
+
+#velocity        hot scale 10000.0 #4928459  dist gaussian
+#velocity        hot create 10000.0 4928459 dist uniform #gaussian
+
+fix             1 all nve
+#fix             1 hyd temp/berendsen 1750.0 1750.0 1.0
+#fix		a2 hyd nve
+#fix             b1 oxy temp/berendsen 1750.0 1750.0 1.0
+#fix		b2 oxy nve
+#fix             a1 hyd nvt temp 1750.0 1750.0 1.0
+#fix             b1 oxy nvt temp 1750.0 1750.0 1.0
+#fix		a1 hot nvt temp 10000.0 10000.0 1.0
+#fix             1 all npt temp 300.0 300.0 1.0 x 1.0 1.0 10.0 y 1.0 1.0 10.0 z 0.0 0.0 100000.0
+fix             2 all qeq/reax 1 0.0 10.0 1.0e-12 reax/c
+
+compute 	myTemp1 rest temp
+compute 	myTemp2 hot temp
+
+thermo		100
+#thermo_style 	custom step temp epair etotal press &
+#		v_eb v_ea v_elp v_emol v_ev v_epen v_ecoa &
+#		v_ehb v_et v_eco v_ew v_ep v_efi v_eqeq
+
+thermo_style 	custom step temp epair etotal press vol c_myTemp1 c_myTemp2
+		
+timestep	0.1
+
+fix             momen rest momentum 1 linear 1 1 1
+
+#dump		1 all atom 10 dump.reaxc.rdx
+dump 		3 all custom 100 trj id q mass x y z 
+dump            4 all custom 100 trjvel id mass vx vy vz
+
+#dump		2 all image 25 image.*.jpg type type &
+#		axes yes 0.8 0.02 view 60 -30
+#dump_modify	2 pad 3
+
+#dump		3 all movie 25 movie.mpg type type &
+#		axes yes 0.8 0.02 view 60 -30
+#dump_modify	3 pad 3
+
+restart 	100000 x.restart
+#write_data 	data.out
+
+
+run		100000
+
