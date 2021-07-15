@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# gfortran read_tychean_dat.f90 -o r
+
+for i in {1..1000}
+  do
+    echo "###########################################################################"
+#     cp species_evolution/frame_$i .
+#     echo frame_$i
+#     mv frame_$i fram
+    
+    cp snapshots/movie_1.$(printf %05d $i).dat .
+    echo movie_1.$(printf %05d $i).dat
+    mv movie_1.$(printf %05d $i).dat block
+    
+    sed  's/Resolution 788 810/Resolution 2364 2430/g' block > out
+    
+#     ./r
+    
+    /home/mohammad/work/soft/tools/vmd/tachyon_LINUXAMD64 -aasamples 12 out -format TARGA -o $i.tga
+    convert $i.tga $i.jpg
+    rm $i.tga
+    #convert $i.tga $i.ppm
+    #mv out out_$i
+    rm -f out fram block
+  done
+
+#convert *jpg movie.gif 
+#convert *ppm movie.mpg
+
+rm -r -f converted_snapshot
+mkdir -p converted_snapshot
+mv  *.jpg converted_snapshot
+
+rm -f r fram block out

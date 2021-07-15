@@ -1,0 +1,52 @@
+\documentclass[tikz]{standalone}
+%\usepackage{tikz}
+%\usepackage{pdfpages}
+
+\usepackage{graphicx,amsmath,latexsym,amssymb,amsthm,geometry}
+\usepackage{pagecolor}% http://ctan.org/pkg/{pagecolor,lipsum}
+\usetikzlibrary{decorations, decorations.text,backgrounds}
+
+\pagestyle{empty}
+
+% set up externalization
+%\usetikzlibrary{external}
+%\tikzset{external/system call={latex \tikzexternalcheckshellescape -halt-on-error
+%-interaction=batchmode -jobname "\image" "\texsource";
+%dvips -o "\image".ps "\image".dvi;
+%ps2eps "\image.ps"}}
+%\tikzexternalize
+
+\begin{document}
+\begin{tikzpicture}
+  \draw[line width=0 mm,color=white,fill=white!10] circle[radius=8.8cm];  
+  \node (label) at (0.0,0.0){
+  \includegraphics[scale=1.0]{./figure_t.pdf}
+  };
+%   \node (label) at (-14.0,0.05){
+%   \includegraphics[scale=0.80]{./figure_b.pdf}
+%   };
+%   \node (A) at (-17.5,2.8) {{\large (a)}};
+%   \node (B) at (-11.7,2.8) {{\large (b)}};
+\end{tikzpicture}
+\end{document}
+
+
+% % making background for b
+% \begin{document}
+% \begin{tikzpicture}
+%   %\draw [fill=white!10!white](0,0) rectangle (5.5,5.5) [step=0.1cm] (0,0) grid (5.5,5.5);
+%   \draw [line width=0 mm,color=lightgray,fill=white!10](0,0) rectangle (5.5,5.5) [step=0.1cm] (0,0) grid (5.5,5.5);
+%   \node (label) at (2.74,3.42){
+%   \includegraphics[scale=0.4]{./Tree_Graph_Diagram.pdf}
+%   };
+% \end{tikzpicture}
+% \end{document}
+
+
+
+% how to use
+% latex --shell-escape figure.tex
+
+%pdflatex \tikzexternalcheckshellescape -halt-on-error 
+%-interaction=batchmode -jobname "\image" "\texsource" && % or ;
+%pdftops -eps "\image".pdf

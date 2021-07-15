@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#cp species_evolution_new tempfile
+cp species_evolution tempfile
+gfortran species_per_frame.f90 -o p
+
+for i in {1..200}
+  do
+    sed -e '/^$/,$d' tempfile > block
+    sed '1,/^$/d' tempfile > remain
+    mv remain tempfile
+    #sed '1d' block > ttemp
+    #mv ttemp block
+    #echo | wc block | awk {'print ($1)'}  > line_block
+    #echo $i > typetemp
+    ./p
+    mv out1 out_$i
+  done
+  
+for i in {1..1500}
+  do
+    for j in {1..200}
+        do
+            cp out_$j temp1
+            sed -n ''$i','$i'p' temp1 >> temp2
+        done
+    mv temp2 frame_$i
+  done  
+  
+rm -f tempfile line_block block p out1 out_* typetem

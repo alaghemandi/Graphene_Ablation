@@ -1,0 +1,51 @@
+#!/usr/bin/gnuplot -persist
+
+#################################################################################################################################################
+# plotting F
+
+reset
+
+#set term epslatex font ',12'
+set terminal epslatex size 9cm,7cm color colortext dashed dl 2 #standalone header\
+#   "\\newcommand{\\ft}[0]{\\footnotesize}"
+set output "fig_a.tex"
+
+#set xlabel "Species" offset 0.0, 0.5 
+set ylabel "Temperature, $T$ (K)" offset 2.0, 0.0 
+
+#set size square 0.85, 0.85
+set size square
+
+#set key at 5, 4.5 spacing 0.9 samplen 0.7 #maxrows 10    
+#set key center top spacing 1.0 samplen 0.7 #maxrows 10 
+#set key top right samplen 1.5  spacing 1.2   
+#set key at -3.3,-1.0 spacing 3.5 maxrows 10      
+#set key at 7.0,35.0 samplen 1.5 spacing 1.4  maxrows 3 font ",8" width 1.5       
+
+set xtics 0.1 offset -0.05, 0.3 # font "Times-Roman,32"
+set ytics 1000 offset 0.5, 0.0 # font "Times-Roman,32"
+
+set format x "%1.1f"
+set format y "%1.0f"
+
+set mxtics 2
+set mytics 2
+#set bmargin 8
+#set rmargin 4
+#set lmargin 15
+
+# corn flower blue	#6495ED	(100,149,237)
+# chocolate		#D2691E	(210,105,30)
+# golden rod		#DAA520	(218,165,32)
+# dark violet		#9400D3	(148,0,211)
+# olive drab		#6B8E23	(107,142,35)
+# slate gray		#708090	(112,128,144)
+
+set yrange[1500:5500]
+set xrange[0:0.45]
+
+plot "out1" using ($1/10000000):2 notitle  w l lw 2  lc rgb "#FF0000"
+
+
+
+

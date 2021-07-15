@@ -1,0 +1,71 @@
+#!/bin/bash
+
+gfortran trj_temp_map.f90 -o t
+./t
+# rm -r -f data_in
+# mkdir -p data_in
+# mv Output* data_in
+
+rm -r -f snapshots
+mkdir -p snapshots
+
+time=0.0
+ignor=0
+
+for i in {1..1000}
+do
+cp data_in/Output$i.txt .
+mv  Output$i.txt temp_map
+
+gnuplot -persist <<-EOFMarker
+set terminal epslatex size 18cm,14cm color colortext #standalone header\
+
+set output "a.tex"
+set size square
+set xrange [-20.0 : 20.0]
+set yrange [-20.0 : 20.0]
+set xtics out nomirror offset 0.0, 0.5 
+set ytics out nomirror offset 0.5, 0.0
+set pm3d map 
+set cbrange [0:7000] 
+set colorbox size .01,.46
+set palette rgbformulae 22,13,-31
+#set label 1 "$time (ps)" at -7,43.055  front
+# set label 2 "-253" at -268,-45.0  front
+# set label 3  "253" at  242,-45.0  front
+# set label 4  "0" at  0,-45.0  front
+# set label 5 "-35" at -278,-32.0  front
+# set label 6 "35" at -273.5,30.0  front
+# set label 7 "0" at -268.5,0.0  front
+splot "temp_map" u 1:2:3 notitle
+EOFMarker
+
+pdflatex figure_a.tex
+pdfcrop figure_a.pdf
+mv figure_a-crop.pdf figure_a.pdf
+
+pdflatex figure.tex
+pdfcrop figure.pdf
+mv figure-crop.pdf figure.pdf
+
+rm -f figure_a.aux figure.aux figure.log figa.eps figure_a.log figa-eps-converted-to.pdf
+rm -f fig_a.eps fig_a-eps-converted-to.pdf figa.tex fig_b.eps fig_b-eps-converted-to.pdf 
+rm -f fig_a.tex fig_b.tex figure_b.aux figure_b.log figure_b.pdf figure_a.pdf a-eps-converted-to.pdf a.eps a.tex
+
+rm -f trjvel_block trj_block temp_map
+
+#time=$(echo $time + 0.1|bc)
+time=$(echo $time | awk '{ print($1 + 0.0) }')
+time=$(echo "$time+0.1" | bc -l)
+convert  -density 150 figure.pdf  $(printf %05d $i).png 
+mv *.png snapshots
+#mv figure.pdf $i.pdf
+#mv $i.pdf snapshots
+rm figure.pdf 
+done
+
+cd snapshots
+ffmpeg -framerate 1/0.024 -i %05d.png -c:v libx264  -pix_fmt yuv420p out.mp4
+
+
+rm -f t ignorframe 

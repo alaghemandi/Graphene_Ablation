@@ -1,0 +1,36 @@
+#!/bin/bash
+
+
+for i in {1..1000}
+    do 
+    cp ../converted_snapshot/$i.jpg .
+    cp ../T_time/snapshots/$(printf %05d $i).png .
+    mv $i.jpg temp.jpg
+    mv $(printf %05d $i).png time_T_temp.png
+    
+    factor=100.0
+    time=$(echo "scale=2; $i/$factor" | bc)
+    #build latex script
+    echo "\documentclass[tikz]{standalone}                                               " >     figure_final.tex
+    echo "\usepackage{graphicx,amsmath,latexsym,amssymb,amsthm,geometry}                 " >>    figure_final.tex
+    echo "\usepackage{pagecolor}% http://ctan.org/pkg/{pagecolor,lipsum}                 " >>    figure_final.tex
+    echo "\usetikzlibrary{decorations, decorations.text,backgrounds}                     " >>    figure_final.tex
+    echo "\usepackage{textcomp}                                                          " >>    figure_final.tex
+    echo "\pagestyle{empty}                                                              " >>    figure_final.tex
+    echo "\begin{document}                                                               " >>    figure_final.tex
+    echo "\begin{tikzpicture}                                                            " >>    figure_final.tex
+    echo "\draw[line width=0 mm,color=white,fill=white!10] circle[radius=50.8cm];        " >>    figure_final.tex
+    echo "\node (label) at (-20.02,0.0){\includegraphics[scale=0.136]{temp.jpg}};           " >>    figure_final.tex
+    echo "\node (label) at (-5.0,  -0.2){\includegraphics[scale=0.50]{time_T_temp.png}};      " >>    figure_final.tex
+    echo "\node (A) at (-12.3, 8.0) {{\Huge \$t=$time \$ ps}};                               " >>    figure_final.tex
+    echo "\end{tikzpicture}                                                              " >>    figure_final.tex
+    echo "\end{document}                                                                 " >>    figure_final.tex
+
+    pdflatex figure_final.tex
+    pdfcrop figure_final.pdf
+    mv figure_final-crop.pdf figure.pdf
+    #convert  figure.pdf $(printf %05d $i).png
+    convert  -density 150 figure.pdf  $(printf %05d $i).png  
+    done
+
+rm -f temp.jpg time_species_temp.pdf figure.pdf figure_final.pdf *.log *.aux time_T_temp.pdf

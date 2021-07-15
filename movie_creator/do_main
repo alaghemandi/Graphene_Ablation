@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# #create frames of atoms type
+# cd species_evolution
+# cp ../codes/do_species_evolution .
+# cp ../codes/species_per_frame.f90 .
+# ./do_species_evolution
+# cd ../
+
+# #do colored snapshots 
+# cp codes/do_colored_snapshots .
+# # cp codes/read_tychean_dat.f90 . 
+# ./do_colored_snapshots
+# rm -f do_colored_snapshots read_tychean_dat.f90
+
+
+# # do frame of species-t graphs
+# cd time_species
+# cp ../codes/do_time_species .
+# cp ../codes/plotting_script_a .
+# mv plotting_script_a plotting_script
+# cp ../codes/figure.tex .
+# cp ../codes/figure_t.tex .
+# cp ../codes/make.bash .
+# cp ../codes/time_species.f90 .
+# ./do_time_specie
+# cd ../
+
+
+# # do frames of T-t graphs
+# cd time_T
+# cp ../codes/do_time_T .
+# cp ../codes/plotting_script_b .
+# mv plotting_script_b plotting_script
+# cp ../codes/figure.tex .
+# cp ../codes/figure_t.tex .
+# cp ../codes/make.bash .
+# cp ../codes/time_T.f90 .
+# ./do_time_T
+# cd ../
+
+
+
+# final snapshots
+rm -r -f final_snapshots
+mkdir -p final_snapshots
+cd final_snapshots
+cp ../codes/do_final_snapshot .
+# cp ../codes/figure_final.tex .
+./do_final_snapshot
+#ffmpeg -framerate 1/5 -pattern_type glob -i '*.png' -c:v libx264 -r 30 -pix_fmt yuv420p out.mp4
+ffmpeg -framerate 1/0.04 -i %05d.png -c:v libx264  -pix_fmt yuv420p out.mp4
+cd ../
+

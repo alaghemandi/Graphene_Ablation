@@ -1,0 +1,14 @@
+#!/bin/bash
+
+gfortran time_species.f90 -o t
+
+# i is number of frames we want to watch
+for i in {1..1500}
+    do 
+    echo $i > ttemp1
+    ./t
+    ./make.bash    
+    mv figure.pdf time_species_$i.pdf
+    done
+
+rm -f r ttemp1 out1 
